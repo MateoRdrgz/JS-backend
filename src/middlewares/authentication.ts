@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import * as express from "express";
+import * as jwt from "jsonwebtoken";
+import { AuthorService } from "../services/author.service";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
 
 export function expressAuthentication(
-    request: Request,
+    request: express.Request,
     securityName: string,
     scopes?: string[]
 ): Promise<any> {
@@ -16,16 +18,25 @@ export function expressAuthentication(
                 reject(new Error("No token provided"));
             }
             jwt.verify(token, "your_jwt_secret_key",function (err : any, decoded : any) {
+                console.log("permissions utilisateur"+decoded.scopes);
+                console.log("permissions requises"+scopes);
                 if (err) {
                     reject(err);
                 }else{
+                    if(scopes !== undefined){
+                        for (let scope of scopes) {
+                            if (!decoded.scopes.includes(scope)) {
+                                reject(new Error("JWT does not contain required scope."));
+                            }
+                        }
+                    }
                     resolve(decoded);
                 }
             });
         });
+    }else{
+        throw new Error("Only support JWT securityName");
     }
-
-    return Promise.reject(new Error("Unknown security"));
 }
 
 /*
