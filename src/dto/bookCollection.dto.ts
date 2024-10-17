@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import { BookDTO } from "./book.dto";
-
-export interface BookCollectionDTO {
-    id?: number;
-    book?: BookDTO;
-    available: boolean;
-    state: number;
-    book_id: number;
-}
-=======
 import { BookOutputDTO } from "./book.dto";
 
 export enum State {
@@ -76,4 +65,3 @@ export interface BookCollectionOutputDTO {
   available: number;
   state: State;
 }
->>>>>>> 156a112606bda64371de1bd5122101ec36ef39dc

@@ -14,7 +14,7 @@ export interface BookAttributes {
 }
 
 export class Book extends Model<BookAttributes> implements BookAttributes {
-  public id?: number;
+  public id!: number;
   public title!: string;
   public publish_year!: number;
   public author_id!: number;

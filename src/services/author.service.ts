@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-import { BookDTO } from "../dto/book.dto";
-import { Author } from "../models/author.model";
-import { Book } from "../models/book.model";
-import { BookCollection } from "../models/bookCollection.model";
-import { bookService } from "./book.service";
-import { BookCollectionService } from "./bookCollection.service";
-
-export class AuthorService {
-  private bookCollectionService = new BookCollectionService();
-=======
 import { AuthorOutputDTO } from "../dto/author.dto";
 import { BookOutputDTO } from "../dto/book.dto";
 import { notFound } from "../error/NotFoundError";
@@ -34,7 +23,6 @@ export class AuthorService {
     ],
   };
 
->>>>>>> 156a112606bda64371de1bd5122101ec36ef39dc
   // Récupère tous les auteurs
   public async getAllAuthors(): Promise<AuthorOutputDTO[]> {
     let authorList = await Author.findAll();
@@ -63,15 +51,6 @@ export class AuthorService {
 
   // Supprime un auteur par ID
   public async deleteAuthor(id: number): Promise<void> {
-<<<<<<< HEAD
-    const author = await Author.findByPk(id);
-    const bookCollections  = await this.bookCollectionService.getAllBookCollection();
-    const bookCollectionsByAuthor= bookCollections.filter(
-      (bookCollection) => bookCollection.book?.author?.id === id
-    );
-    if (author && bookCollectionsByAuthor.length === 0) {
-      await author.destroy();
-=======
     const author = await Author.findByPk(id, this.includeBooksBookColections);
     if (author) {
       if (author.books.length > 0) {
@@ -94,7 +73,6 @@ export class AuthorService {
       author.destroy();
     } else {
       notFound("Author");
->>>>>>> 156a112606bda64371de1bd5122101ec36ef39dc
     }
   }
 
@@ -123,19 +101,6 @@ export class AuthorService {
         },
       }),
     );
-  }
-  public async getBooksByAuthorId(id: number): Promise<Book[] | null> {
-    const author = await Author.findByPk(id, {
-      include: [{
-        model: BookCollection,
-        as: 'books'
-      }]
-    });
-    const books = await bookService.getAllBooks();
-    const booksByAuthor = books.filter(
-      (book) => book.author?.id === id
-    );
-    return booksByAuthor; 
   }
 }
 
