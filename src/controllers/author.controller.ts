@@ -1,37 +1,42 @@
-import { Controller, Get, Post, Delete, Route, Path, Body, Tags, Patch } from "tsoa";
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Route,
+  Path,
+  Body,
+  Tags,
+  Patch,
+} from "tsoa";
 import { authorService } from "../services/author.service";
-import { AuthorDTO } from "../dto/author.dto";
-import { Author } from "../models/author.model";
-import { Book } from "../models/book.model";
-import { BookDTO } from "../dto/book.dto";
+import {
+  AuthorInputDTO,
+  AuthorInputPatchDTO,
+  AuthorOutputDTO,
+} from "../dto/author.dto";
+import { BookOutputDTO } from "../dto/book.dto";
 
 @Route("authors")
 @Tags("Authors")
 export class AuthorController extends Controller {
   // Récupère tous les auteurs
   @Get("/")
-  public async getAllAuthors(): Promise<AuthorDTO[]> {
+  public async getAllAuthors(): Promise<AuthorOutputDTO[]> {
     return authorService.getAllAuthors();
   }
 
   // Récupère un auteur par ID
   @Get("{id}")
-  public async getAuthorById(@Path() id: number): Promise<AuthorDTO | null> {
-    const author = await authorService.getAuthorById(id);
-
-    if(!author){
-      const error = new Error('Author not found');
-      (error as any).status = 404;
-      throw error;
-    }
-    return author;
+  public async getAuthorById(@Path() id: number): Promise<AuthorOutputDTO> {
+    return authorService.getAuthorById(id);
   }
 
   // Crée un nouvel auteur
   @Post("/")
   public async createAuthor(
-    @Body() requestBody: AuthorDTO
-  ): Promise<AuthorDTO> {
+    @Body() requestBody: AuthorInputDTO,
+  ): Promise<AuthorOutputDTO> {
     const { first_name, last_name } = requestBody;
     return authorService.createAuthor(first_name, last_name);
   }
@@ -46,14 +51,16 @@ export class AuthorController extends Controller {
   @Patch("{id}")
   public async updateAuthor(
     @Path() id: number,
-    @Body() requestBody: AuthorDTO
-  ): Promise<AuthorDTO | null> {
+    @Body() requestBody: AuthorInputPatchDTO,
+  ): Promise<AuthorOutputDTO> {
     const { first_name, last_name } = requestBody;
     return authorService.updateAuthor(id, first_name, last_name);
   }
 
   @Get("{id}/books")
-  public async getBooksByAuthorId(@Path() id: number): Promise<BookDTO[] | null> {
-    return authorService.getBooksByAuthorId(id);
+  public async getBooksByAuthorId(
+    @Path() id: number,
+  ): Promise<BookOutputDTO[]> {
+    return await authorService.getBooksByAuthorId(id);
   }
 }

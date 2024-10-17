@@ -1,35 +1,70 @@
-import { Body, Controller, Get, Post, Route, Tags,Patch ,Path, Delete} from "tsoa";
-import { BookDTO } from "../dto/book.dto";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Path,
+  Post,
+  Route,
+  Tags,
+} from "tsoa";
+import {
+  BookInputDTO,
+  BookInputPatchDTO,
+  BookOutputDTO,
+} from "../dto/book.dto";
 import { bookService } from "../services/book.service";
-import { BookCollectionDTO } from "../dto/bookCollection.dto";
+import { BookCollectionOutputDTO } from "../dto/bookCollection.dto";
 
 @Route("books")
 @Tags("Books")
 export class BookController extends Controller {
   @Get("/")
-  public async getAllBooks(): Promise<BookDTO[]> {
+  public async getAllBooks(): Promise<BookOutputDTO[]> {
     return bookService.getAllBooks();
   }
-  @Get("/{id}")
-  public async getBookById(@Path() id: number): Promise<BookDTO> {
-    return bookService.getBookById(id);
+
+  @Get("{id}")
+  public async getBook(@Path("id") id: number): Promise<BookOutputDTO> {
+    return await bookService.getBookById(id);
   }
+
   @Post("/")
-  public async createBook(@Body() requestBody: BookDTO): Promise<BookDTO> {
-    const { title, publish_year,author,isbn } = requestBody;
-    return bookService.createBook(title, publish_year, isbn, author?.id);
+  public async postBooks(
+    @Body() requestBody: BookInputDTO,
+  ): Promise<BookOutputDTO> {
+    return bookService.createBook(
+      requestBody.title,
+      requestBody.publish_year,
+      requestBody.author_id,
+      requestBody.isbn,
+    );
   }
-  @Patch("/{id}")
-  public async updateBook(@Path() id:number,@Body() requestBody: BookDTO): Promise<BookDTO> {
-    const { title, publish_year,author,isbn } = requestBody;
-    return bookService.updateBook(id, title, publish_year, isbn, author?.id);
+
+  @Patch("{id}")
+  public async patchBook(
+    @Path("id") id: number,
+    @Body() requestBody: BookInputPatchDTO,
+  ): Promise<BookOutputDTO> {
+    return bookService.updateBook(
+      id,
+      requestBody.title,
+      requestBody.publish_year,
+      requestBody.author_id,
+      requestBody.isbn,
+    );
   }
-  @Delete("/{id}")
-  public async deleteBook(@Path() id: number): Promise<void> {
-    return bookService.deleteBook(id);
+
+  @Delete("{id}")
+  public async deleteBook(@Path("id") id: number): Promise<void> {
+    await bookService.deleteBook(id);
   }
-  @Get("/{id}/book-collections")
-  public async getBookCollectionsByBookId(@Path() id: number): Promise<BookCollectionDTO[] |null> {
+
+  @Get("{id}/book-collections")
+  public async getBookCollectionsByBookId(
+    @Path() id: number,
+  ): Promise<BookCollectionOutputDTO[]> {
     return bookService.getBookCollectionsByBookId(id);
   }
 }
