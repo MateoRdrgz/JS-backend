@@ -2,6 +2,8 @@ import { Controller, Get, Post, Delete, Route, Path, Body, Tags, Patch } from "t
 import { authorService } from "../services/author.service";
 import { AuthorDTO } from "../dto/author.dto";
 import { Author } from "../models/author.model";
+import { Book } from "../models/book.model";
+import { BookDTO } from "../dto/book.dto";
 
 @Route("authors")
 @Tags("Authors")
@@ -48,5 +50,10 @@ export class AuthorController extends Controller {
   ): Promise<AuthorDTO | null> {
     const { first_name, last_name } = requestBody;
     return authorService.updateAuthor(id, first_name, last_name);
+  }
+
+  @Get("{id}/books")
+  public async getBooksByAuthorId(@Path() id: number): Promise<BookDTO[] | null> {
+    return authorService.getBooksByAuthorId(id);
   }
 }
